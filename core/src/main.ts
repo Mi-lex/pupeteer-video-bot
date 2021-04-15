@@ -1,8 +1,9 @@
 import { ValidationPipe } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import env from './config/env';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+
 import { AppModule } from './app.module';
+import env from './config/env';
 import { HttpExceptionFilter } from './exception-filters/http-exception.filter';
 import { PinoLoggerService } from './modules/logger/pino-logger.service';
 

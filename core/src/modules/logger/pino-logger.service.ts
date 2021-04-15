@@ -1,7 +1,7 @@
 import { Injectable, LoggerService } from '@nestjs/common';
 import * as pinoLogger from 'pino';
-import env from 'src/config/env';
-import { TelegramService } from '../telegram/telegram.service'
+import { TelegramService } from '../telegram/telegram.service';
+import env from '../../config/env';
 
 const pino = pinoLogger({
     prettyPrint: true,

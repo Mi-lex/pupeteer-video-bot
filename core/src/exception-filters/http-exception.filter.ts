@@ -1,12 +1,12 @@
 import {
-    Catch,
     ArgumentsHost,
+    Catch,
     HttpException,
     HttpServer,
     HttpStatus,
 } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
-import { PinoLoggerService } from 'src/modules/logger/pino-logger.service'
+import { PinoLoggerService } from './../modules/logger/pino-logger.service';
 
 @Catch()
 export class HttpExceptionFilter extends BaseExceptionFilter {

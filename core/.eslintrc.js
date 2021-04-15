@@ -5,11 +5,21 @@ module.exports = {
         tsconfigRootDir: __dirname,
         sourceType: 'module',
     },
-    plugins: ['@typescript-eslint/eslint-plugin'],
+    plugins: ['@typescript-eslint/eslint-plugin', 'import'],
     extends: [
         'plugin:@typescript-eslint/recommended',
         'plugin:prettier/recommended',
+        'plugin:import/errors',
+        'plugin:import/warnings',
+        'plugin:import/typescript',
     ],
+    settings: {
+        'import/resolver': {
+            node: {
+                moduleDirectory: ['node_modules', 'src'],
+            },
+        },
+    },
     root: true,
     env: {
         node: true,
@@ -37,5 +47,11 @@ module.exports = {
                 ignoreDefaultValues: true,
             },
         ],
+        'import/first': 'error',
+        'import/newline-after-import': 'error',
+        'newlines-between': 'off',
+        'import/no-duplicates': 'error',
+        'import/order': 'error',
+        'no-absolute-path': 'off',
     },
 };
