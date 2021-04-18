@@ -3,7 +3,7 @@ import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { AppModule } from './app.module';
-import env from './config/env';
+import vars from './config/vars';
 import { HttpExceptionFilter } from './exception-filters/http-exception.filter';
 import { PinoLoggerService } from './modules/logger/pino-logger.service';
 
@@ -32,16 +32,16 @@ const bootstrap = async () => {
     );
 
     const config = new DocumentBuilder()
-        .setTitle(`${env.PROJECT_NAME}`)
-        .setDescription(`The ${env.PROJECT_NAME} API description`)
+        .setTitle(`${vars.PROJECT_NAME}`)
+        .setDescription(`The ${vars.PROJECT_NAME} API description`)
         .setVersion('1.0')
         .build();
 
     const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup(env.API_DOC_PATH, app, document, {
-        customSiteTitle: `${env.PROJECT_NAME} api doc`,
+    SwaggerModule.setup(vars.API_DOC_PATH, app, document, {
+        customSiteTitle: `${vars.PROJECT_NAME} api doc`,
     });
 
-    await app.listen(env.PORT);
+    await app.listen(vars.PORT);
 };
 bootstrap();

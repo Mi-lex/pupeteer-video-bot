@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as TelegramBot from 'node-telegram-bot-api';
-import env from '../../config/env';
+import vars from '../../config/vars';
 
 @Injectable()
 export class TelegramService {
@@ -8,8 +8,8 @@ export class TelegramService {
     private readonly bot: TelegramBot;
 
     constructor() {
-        this.chatId = env.TELEGRAM_CHAT_ID;
-        this.bot = new TelegramBot(env.TELEGRAM_BOT_TOKEN);
+        this.chatId = vars.TELEGRAM_CHAT_ID;
+        this.bot = new TelegramBot(vars.TELEGRAM_BOT_TOKEN);
     }
 
     sendMessage(message: string) {
