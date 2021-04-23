@@ -1,22 +1,28 @@
-import { Injectable } from '@nestjs/common';
+import { ConfigType } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
 import * as TelegramBot from 'node-telegram-bot-api';
-import vars from '../../config/vars';
+import telegramConfig from '../../config/telegram.config';
 
 @Injectable()
 export class TelegramService {
     private readonly chatId: string;
     private readonly bot: TelegramBot;
 
-    constructor() {
-        this.chatId = vars.TELEGRAM_CHAT_ID;
-        this.bot = new TelegramBot(vars.TELEGRAM_BOT_TOKEN);
+    constructor(
+        @Inject(telegramConfig.KEY)
+        private readonly config: ConfigType<typeof telegramConfig>,
+    ) {
+        this.chatId = this.config.chatId || '';
+        this.bot = new TelegramBot(`${this.config.botToken}`);
     }
 
     sendMessage(message: string) {
-        return this.bot.sendMessage(this.chatId, message);
+        if (this.bot) return this.bot.sendMessage(this.chatId, message);
+        return false;
     }
 
     sendPhoto(photo: string | Buffer) {
-        return this.bot.sendPhoto(this.chatId, photo);
+        if (this.bot) return this.bot.sendPhoto(this.chatId, photo);
+        return false;
     }
 }

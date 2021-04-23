@@ -1,16 +1,19 @@
 import { ValidationPipe } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ConfigType } from '@nestjs/config';
 
 import { AppModule } from './app.module';
-import vars from './config/vars';
 import { HttpExceptionFilter } from './exception-filters/http-exception.filter';
 import { PinoLoggerService } from './modules/logger/pino-logger.service';
+import AppConfig from './config/app.config';
 
 const bootstrap = async () => {
     const app = await NestFactory.create(AppModule);
     const { httpAdapter } = app.get(HttpAdapterHost);
     const pinoLoggerService = app.get(PinoLoggerService);
+    const appConfig = app.get<ConfigType<typeof AppConfig>>(AppConfig.KEY);
+
     app.useLogger(pinoLoggerService);
     app.useGlobalFilters(
         new HttpExceptionFilter(httpAdapter, pinoLoggerService),
@@ -32,16 +35,16 @@ const bootstrap = async () => {
     );
 
     const config = new DocumentBuilder()
-        .setTitle(`${vars.PROJECT_NAME}`)
-        .setDescription(`The ${vars.PROJECT_NAME} API description`)
+        .setTitle(`${appConfig.projectName}`)
+        .setDescription(`The ${appConfig.projectName} API description`)
         .setVersion('1.0')
         .build();
 
     const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup(vars.API_DOC_PATH, app, document, {
-        customSiteTitle: `${vars.PROJECT_NAME} api doc`,
+    SwaggerModule.setup(`${appConfig.apiDocPath}`, app, document, {
+        customSiteTitle: `${appConfig.projectName} api doc`,
     });
 
-    await app.listen(vars.PORT);
+    await app.listen(appConfig.port);
 };
 bootstrap();

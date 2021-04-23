@@ -1,12 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { ConfigType } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
 import { LaunchOptions, Page } from 'puppeteer';
 import { Cluster } from 'puppeteer-cluster';
-import { PUPPETEER_DEFAULTS } from '../../config/defaults';
 import {
     ONE_MINUTE_MS,
     ONE_SECOND_MS,
 } from '../../common/constants/time.const';
 import { wait } from '../../common/helpers/time.helper';
+import pupeteerConfig from '../../config/pupeteer.config';
 import { PinoLoggerService } from './../logger/pino-logger.service';
 
 import { CreateBotDto } from './dto/create-bot.dto';
@@ -65,6 +66,9 @@ export class BotsService {
     ];
 
     constructor(
+        @Inject(pupeteerConfig.KEY)
+        private readonly config: ConfigType<typeof pupeteerConfig>,
+
         private readonly telegramService: TelegramService,
         private readonly pinoLoggerService: PinoLoggerService,
     ) {}
@@ -87,11 +91,11 @@ export class BotsService {
         this._cluster = await Cluster.launch({
             concurrency: Cluster.CONCURRENCY_BROWSER,
             maxConcurrency: 10,
-            timeout: PUPPETEER_DEFAULTS.BOT_TIMEOUT,
+            timeout: this.config.botTimeout,
             monitor: false,
             puppeteerOptions: {
-                userDataDir: PUPPETEER_DEFAULTS.USER_DATA_DIR,
-                args: PUPPETEER_DEFAULTS.chromiumArgs,
+                userDataDir: this.config.userDataDir,
+                args: this.config.chromiumArgs,
                 /**
                  * error in pupeteer-cluster, it's supposed to take
                  * LaunchOptions & BrowserLaunchArgumentOptions & BrowserConnectOptions
@@ -132,7 +136,7 @@ export class BotsService {
         for await (const xpath of xpaths) {
             const { waitTimeOut, clickable, captureBeforeTimeout } = xpath;
             const waitElementTimeout =
-                waitTimeOut || PUPPETEER_DEFAULTS.waitForElementTimeoutMs;
+                waitTimeOut || this.config.waitForElementTimeoutMs;
 
             const xPathLabel = this.getXpathLabel(xpath);
 
@@ -163,7 +167,7 @@ export class BotsService {
         page,
         data,
     }: ExecuteTaskArgs<string>) => {
-        await page.setViewport(PUPPETEER_DEFAULTS.viewport);
+        await page.setViewport(this.config.viewport);
         await page.goto(data);
 
         await this.followPath(page, this._xpaths);
