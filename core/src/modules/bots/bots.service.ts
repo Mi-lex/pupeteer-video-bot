@@ -45,13 +45,7 @@ export class BotsService {
         },
         {
             type: 'button',
-            match: 'Continue',
-            clickable: true,
-            captureBeforeTimeout: true,
-        },
-        {
-            type: 'button',
-            match: 'Join',
+            match: 'Join with',
             clickable: true,
             captureBeforeTimeout: true,
         },
@@ -79,7 +73,9 @@ export class BotsService {
         if (b64string) {
             const screenBuffer = Buffer.from(b64string as string, 'base64');
 
-            await this.telegramService.sendPhoto(screenBuffer);
+            await this.telegramService.sendPhotoToChannel({
+                source: screenBuffer,
+            });
         }
     }
 
