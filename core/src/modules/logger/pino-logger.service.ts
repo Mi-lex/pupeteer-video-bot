@@ -27,8 +27,9 @@ export class PinoLoggerService implements LoggerService {
     ): void {
         const formattedMessage = PinoLoggerService.getMessage(message, context);
         logFn(formattedMessage);
+
         if (this.appConfig.nodeEnv !== 'development') {
-            this.telegramService.sendMessage(formattedMessage);
+            this.telegramService.sendMessageToChannel(formattedMessage);
         }
     }
 
