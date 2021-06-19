@@ -2,8 +2,6 @@ import { ConfigType } from '@nestjs/config';
 import { Inject, Injectable } from '@nestjs/common';
 import * as TelegramBot from 'node-telegram-bot-api';
 import telegramConfig from '../../config/telegram.config';
-import { RedisCacheService } from '../redis-cache/redis-cache.service';
-import { RequestEntity } from './entities/request.entity';
 
 type OnTextListener = (
     msg: TelegramBot.Message,
@@ -18,13 +16,11 @@ export class TelegramService {
     constructor(
         @Inject(telegramConfig.KEY)
         private readonly config: ConfigType<typeof telegramConfig>,
-        private readonly redisCacheService: RedisCacheService,
     ) {
         this.chatId = this.config.chatId || '';
         this.bot = new TelegramBot(`${this.config.botToken}`, {
             polling: true,
         });
-        console.log(this.redisCacheService);
     }
 
     sendMessageToChannel(
@@ -63,9 +59,5 @@ export class TelegramService {
 
     onText(textRegex: RegExp, listener: OnTextListener) {
         return this.bot.onText(textRegex, listener);
-    }
-
-    getUserCurrentRequest(chatId: number) {
-        return this.redisCacheService.get<RequestEntity>(`${chatId}`);
     }
 }
