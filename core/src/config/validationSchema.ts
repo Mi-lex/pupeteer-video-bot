@@ -13,4 +13,7 @@ export default Joi.object({
     TELEGRAM_CHAT_ID: Joi.string(),
     TELEGRAM_BOT_TOKEN: Joi.string(),
     TELEGRAM_MAX_MESSAGE_LENGTH: Joi.number().default(4096),
+    // redis
+    REDIS_HOST: Joi.string().default('localhost'),
+    REDIS_PORT: Joi.number().default(6379),
 });
