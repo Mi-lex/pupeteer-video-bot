@@ -46,5 +46,6 @@ const bootstrap = async () => {
     });
 
     await app.listen(appConfig.port);
+    await pinoLoggerService.log(`App listening port ${appConfig.port}`);
 };
 bootstrap();
