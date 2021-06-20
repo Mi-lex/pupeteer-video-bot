@@ -1,0 +1,54 @@
+import { Middleware, Scenes } from 'telegraf';
+import { WizardContext, WizardScene } from 'telegraf/src/scenes';
+
+type CustomWizardStep = (ctx: WizardContext) => Promise<undefined>;
+
+const contactDataWizard = new Scenes.WizardScene(
+    'CONTACT_DATA_WIZARD_SCENE_ID', // first argument is Scene_ID, same as for BaseScene
+    (ctx) => {
+        // validation exampl
+        // ctx.mes
+        if (ctx.message) {
+            ctx.reply('Please enter name for real');
+            return;
+        }
+        // ctx.wizard.state.contactData.fio = ctx.message.text;
+        // ctx.reply('Enter your e-mail');
+        // return ctx.wizard.next();
+        ctx.wizard.next();
+    },
+);
+
+type GetNextSceneFunc = (ctx: WizardContext) => string;
+
+const unwrapCallback = async (
+    ctx: WizardContext,
+    nextSceneWrapper: GetNextSceneFunc,
+) => {
+    const nextSceneId = await Promise.resolve(nextSceneWrapper(ctx));
+
+    if (nextSceneId) {
+        return ctx.scene.enter(nextSceneId, ctx.scene.state);
+    }
+
+    return ctx.scene.leave();
+};
+
+/**
+ * Takes steps as arguments and returns a sceneFactory
+ *
+ * Additionally does the following things:
+ * 1. Makes sure next step only triggers on `message` or `callbackQuery`
+ * 2. Passes second argument - doneCallback to each step to be called when scene is finished
+ */
+export const composeWizardScene = (...steps: Middleware<WizardContext>[]) =>
+    function createWizardScene(sceneType: string, nextScene: GetNextSceneFunc) {
+        return new WizardScene(
+            sceneType,
+            ...steps.map((stepFn) => async (ctx: WizardContext, next) => {
+                /** ignore user action if it is neither message, nor callbackQuery */
+                if (!ctx.message && !ctx.callbackQuery) return undefined;
+                return stepFn(ctx, () => unwrapCallback(ctx, nextScene), next);
+            }),
+        );
+    };
