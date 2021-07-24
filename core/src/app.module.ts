@@ -1,16 +1,15 @@
 import { ConfigModule } from '@nestjs/config';
-import { HttpModule, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { PinoLoggerService } from './modules/logger/pino-logger.service';
 import { AppController } from './app.controller';
 import { BotsModule } from './modules/bots/bots.module';
 import { app, telegram, pupeteer, redis } from './config';
 import { TelegramModule } from './modules/telegram/telegram.module';
-import { RedisCacheModule } from './modules/redis-cache/redis-cache.module';
+// import { RedisCacheModule } from './modules/redis-cache/redis-cache.module';
 import validationSchema from './config/validationSchema';
 
 @Module({
     imports: [
-        HttpModule,
         ConfigModule.forRoot({
             validationSchema: validationSchema,
             load: [app, telegram, pupeteer, redis],
@@ -18,7 +17,7 @@ import validationSchema from './config/validationSchema';
         }),
         TelegramModule,
         BotsModule,
-        RedisCacheModule,
+        // RedisCacheModule,
     ],
     controllers: [AppController],
     providers: [PinoLoggerService],
